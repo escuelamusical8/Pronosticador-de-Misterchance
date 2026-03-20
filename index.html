@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎲 Generador Inteligente — Dorado Mañana</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #07080d;
+    --panel:   #0f1117;
+    --border:  #1e2330;
+    --gold:    #f0c040;
+    --gold2:   #c9960a;
+    --green:   #3bba6e;
+    --blue:    #58a6ff;
+    --red:     #f85149;
+    --text:    #c9d1d9;
+    --muted:   #484f58;
+    --hot:     #ff7b39;
+    --cold:    #58b5ff;
+    --mix:     #b07aff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 15px;
+    min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse 80% 40% at 50% -10%, rgba(240,192,64,.07) 0%, transparent 70%),
+      repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255,255,255,.015) 40px),
+      repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255,255,255,.015) 40px);
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: linear-gradient(135deg, #1a1200 0%, #0f0a00 40%, #0a0d15 100%);
+    border-bottom: 2px solid var(--gold2);
+    padding: 22px 24px 18px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(
+      45deg, transparent 0, transparent 10px,
+      rgba(240,192,64,.03) 10px, rgba(240,192,64,.03) 11px
+    );
+  }
+  .header-icon { font-size: 2.4rem; line-height: 1; margin-bottom: 6px; }
+  header h1 {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1.35rem;
+    color: var(--gold);
+    letter-spacing: 2px;
+    text-shadow: 0 0 20px rgba(240,192,64,.4);
+    position: relative;
+  }
+  header p {
+    margin-top: 5px;
+    font-size: .85rem;
+    color: var(--muted);
+    letter-spacing: 1px;
+    position: relative;
+  }
+  header p span { color: var(--hot); }
+  header p span.c { color: var(--cold); }
+  header p span.m { color: var(--mix); }
+
+  /* ── LAYOUT ── */
+  .container { max-width: 900px; margin: 0 auto; padding: 20px 16px 40px; }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    margin-bottom: 16px;
+    position: relative;
+  }
+  .card-title {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: .8rem;
+    letter-spacing: 2px;
+    color: var(--gold);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--border), transparent);
+  }
+
+  /* ── INPUT ── */
+  textarea {
+    width: 100%;
+    background: #060810;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--gold);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: .92rem;
+    padding: 12px 14px;
+    resize: vertical;
+    min-height: 110px;
+    outline: none;
+    line-height: 1.7;
+    transition: border-color .2s;
+  }
+  textarea:focus { border-color: var(--gold2); }
+  textarea::placeholder { color: #3a3520; }
+
+  /* ── CANTIDAD ── */
+  .cantidad-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 14px;
+  }
+  .cantidad-label {
+    font-size: .85rem;
+    color: var(--muted);
+    font-family: 'Share Tech Mono', monospace;
+    letter-spacing: 1px;
+  }
+  .radio-group { display: flex; gap: 8px; flex-wrap: wrap; }
+  .radio-group input { display: none; }
+  .radio-group label {
+    display: inline-block;
+    padding: 5px 16px;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: .95rem;
+    cursor: pointer;
+    color: var(--muted);
+    transition: all .2s;
+    user-select: none;
+  }
+  .radio-group input:checked + label {
+    background: rgba(240,192,64,.12);
+    border-color: var(--gold2);
+    color: var(--gold);
+    box-shadow: 0 0 10px rgba(240,192,64,.15);
+  }
+  .radio-group label:hover { border-color: var(--gold2); color: var(--gold); }
+
+  /* ── BUTTONS ── */
+  .btn-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 6px 0 4px;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 22px;
+    border: none;
+    border-radius: 7px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: .95rem;
+    cursor: pointer;
+    transition: all .2s;
+    letter-spacing: .5px;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, #2a5c1e, #1a3a12);
+    color: #a3e08e;
+    border: 1px solid #3bba6e66;
+    box-shadow: 0 0 18px rgba(59,186,110,.15), inset 0 1px 0 rgba(255,255,255,.08);
+  }
+  .btn-primary:hover {
+    background: linear-gradient(135deg, #336e24, #224815);
+    box-shadow: 0 0 28px rgba(59,186,110,.28);
+    transform: translateY(-1px);
+  }
+  .btn-primary:active { transform: translateY(0); }
+  .btn-sec {
+    background: #161b22;
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .btn-sec:hover { border-color: #484f58; background: #1c2230; }
+  .btn-danger {
+    background: #1a0d0d;
+    color: #f85149;
+    border: 1px solid #f8514922;
+  }
+  .btn-danger:hover { background: #221212; border-color: #f8514955; }
+  .btn:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+
+  /* ── STATUS ── */
+  #status {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: .78rem;
+    text-align: center;
+    color: var(--muted);
+    padding: 4px 0;
+    letter-spacing: 1px;
+    min-height: 20px;
+    transition: color .3s;
+  }
+  #status.ok   { color: var(--green); }
+  #status.err  { color: var(--red); }
+  #status.wait { color: var(--gold); }
+
+  /* ── SPINNER ── */
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spinner {
+    display: inline-block;
+    width: 14px; height: 14px;
+    border: 2px solid transparent;
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin .6s linear infinite;
+    vertical-align: middle;
+    margin-right: 6px;
+  }
+
+  /* ── OUTPUT ── */
+  #output { display: none; }
+
+  /* ── STATS BAR ── */
+  .stat-bar {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+  .stat-item {
+    flex: 1;
+    min-width: 140px;
+    background: #0b0e15;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    text-align: center;
+  }
+  .stat-val {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1.5rem;
+    color: var(--gold);
+  }
+  .stat-lbl {
+    font-size: .75rem;
+    color: var(--muted);
+    letter-spacing: 1px;
+    margin-top: 2px;
+  }
+
+  /* ── FREQ TABLE ── */
+  .freq-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .freq-pos {
+    background: #0b0e15;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+  }
+  .freq-pos-title {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: .72rem;
+    color: var(--muted);
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+  .freq-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 2px 0;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: .82rem;
+  }
+  .freq-digit { color: var(--gold); min-width: 18px; }
+  .freq-bar-wrap {
+    flex: 1; margin: 0 6px;
+    height: 5px;
+    background: #1e2330;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .freq-bar { height: 100%; border-radius: 3px; }
+  .freq-count { color: var(--muted); font-size: .72rem; min-width: 20px; text-align: right; }
+
+  /* ── METHOD SECTIONS ── */
+  .method-section { margin-bottom: 16px; }
+  .method-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    border-radius: 8px 8px 0 0;
+    border: 1px solid var(--border);
+    border-bottom: none;
+  }
+  .method-header.hot { background: linear-gradient(90deg, #1a0a00, #0f1117); border-top-color: #ff7b3944; }
+  .method-header.cold { background: linear-gradient(90deg, #001020, #0f1117); border-top-color: #58b5ff44; }
+  .method-header.mix { background: linear-gradient(90deg, #100820, #0f1117); border-top-color: #b07aff44; }
+
+  .method-icon { font-size: 1.4rem; }
+  .method-name {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: .9rem;
+    letter-spacing: 1px;
+  }
+  .method-name.hot  { color: var(--hot); }
+  .method-name.cold { color: var(--cold); }
+  .method-name.mix  { color: var(--mix); }
+  .method-desc { font-size: .78rem; color: var(--muted); margin-left: auto; }
+
+  .nums-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 8px;
+    padding: 14px;
+    background: #0b0e15;
+    border: 1px solid var(--border);
+    border-radius: 0 0 8px 8px;
+  }
+
+  .num-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 10px 12px;
+    text-align: center;
+    transition: transform .15s, box-shadow .15s;
+    cursor: default;
+  }
+  .num-card:hover { transform: translateY(-2px); }
+  .num-card.hot  { border-top: 2px solid var(--hot);  }
+  .num-card.cold { border-top: 2px solid var(--cold); }
+  .num-card.mix  { border-top: 2px solid var(--mix);  }
+
+  .num-rank {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: .68rem;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .num-digits {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1.65rem;
+    font-weight: bold;
+    letter-spacing: 3px;
+  }
+  .num-card.hot  .num-digits { color: var(--hot); }
+  .num-card.cold .num-digits { color: var(--cold); }
+  .num-card.mix  .num-digits { color: var(--mix); }
+
+  .num-score { margin-top: 5px; }
+  .score-bar-wrap {
+    width: 100%; height: 4px;
+    background: #1e2330;
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 3px;
+  }
+  .score-bar { height: 100%; border-radius: 2px; }
+  .num-stars {
+    font-size: .72rem;
+    color: var(--muted);
+    font-family: 'Share Tech Mono', monospace;
+  }
+  .num-pct {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: .8rem;
+    color: var(--text);
+  }
+
+  /* ── DISCLAIMER ── */
+  .disclaimer {
+    text-align: center;
+    font-size: .78rem;
+    color: var(--muted);
+    padding: 12px;
+    border: 1px solid #1e2330;
+    border-radius: 8px;
+    background: #07080d;
+    line-height: 1.6;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 600px) {
+    header h1 { font-size: 1.05rem; }
+    .freq-grid { grid-template-columns: repeat(2, 1fr); }
+    .nums-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .fade-up { animation: fadeUp .35s ease both; }
+  .fade-up:nth-child(2) { animation-delay: .07s; }
+  .fade-up:nth-child(3) { animation-delay: .14s; }
+  .fade-up:nth-child(4) { animation-delay: .21s; }
+  .fade-up:nth-child(5) { animation-delay: .28s; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: .4; }
+  }
+  .pulsing { animation: pulse 1.2s ease infinite; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-icon">🎲</div>
+  <h1>GENERADOR INTELIGENTE — DORADO MAÑANA</h1>
+  <p>
+    <span>🔥 Temperatura Adaptativa</span>
+    &nbsp;·&nbsp;
+    <span class="c">❄️ Ausencia Exponencial</span>
+    &nbsp;·&nbsp;
+    <span class="m">🌀 Muestreo por Épocas</span>
+  </p>
+</header>
+
+<div class="container">
+
+  <!-- INPUT CARD -->
+  <div class="card">
+    <div class="card-title">📥 ÚLTIMOS RESULTADOS</div>
+    <textarea id="inputNums" placeholder="Pega aquí los números del Dorado Mañana separados por espacios o saltos de línea…
+Ejemplo: 8646 3514 4637 7277 0148 2371 5142 9662 1937 2051">8646 3514 4637 7277 0148 2371 5142 9662 1937 2051
+2628 7485 8477 6824 7697 7973 4492 1950 4848 5554
+6073 5146 8537 9801 0909 8632 6425 1105 9135 4228</textarea>
+
+    <div class="cantidad-row">
+      <span class="cantidad-label">COMBINACIONES&nbsp;POR&nbsp;GRUPO:</span>
+      <div class="radio-group">
+        <input type="radio" name="qty" id="q3"  value="3"><label for="q3">3</label>
+        <input type="radio" name="qty" id="q5"  value="5" checked><label for="q5">5</label>
+        <input type="radio" name="qty" id="q10" value="10"><label for="q10">10</label>
+        <input type="radio" name="qty" id="q15" value="15"><label for="q15">15</label>
+      </div>
+      <span class="cantidad-label" style="color:#333">( 🔥 + ❄️ + 🌀 )</span>
+    </div>
+  </div>
+
+  <!-- BUTTONS -->
+  <div class="btn-row">
+    <button class="btn btn-primary" id="btnGenerar" onclick="runGenerar()">
+      🎲&nbsp;&nbsp;GENERAR COMBINACIONES
+    </button>
+    <button class="btn btn-sec" onclick="runGenerar()">🔄 Nueva Tanda</button>
+    <button class="btn btn-danger" onclick="limpiar()">🗑 Limpiar</button>
+  </div>
+
+  <div id="status">Listo. Ingresa los resultados y presiona GENERAR.</div>
+
+  <!-- OUTPUT -->
+  <div id="output"></div>
+
+</div>
+
+<script>
+// ══════════════════════════════════════════
+//  UTILIDADES
+// ══════════════════════════════════════════
+
+function parseNumbers(raw) {
+  const tokens = raw.replace(/[\n,]/g, ' ').split(/\s+/);
+  const nums = [];
+  for (const t of tokens) {
+    const clean = t.trim();
+    if (/^\d+$/.test(clean)) {
+      const padded = clean.padStart(4, '0').slice(-4);
+      if (padded.length === 4) nums.push(padded);
+    }
+  }
+  return nums;
+}
+
+function diferencia(a, b) {
+  let d = 0;
+  for (let i = 0; i < 4; i++) if (a[i] !== b[i]) d++;
+  return d;
+}
+
+function tieneRepetidos(num) {
+  for (let i = 0; i < 2; i++)
+    if (num[i] === num[i+1] && num[i+1] === num[i+2]) return true;
+  return false;
+}
+
+function ruleta(pesosDict) {
+  const keys  = Object.keys(pesosDict);
+  const vals  = Object.values(pesosDict);
+  const total = vals.reduce((a, b) => a + b, 0);
+  let r = Math.random() * total;
+  for (let i = 0; i < keys.length; i++) {
+    r -= vals[i];
+    if (r <= 0) return keys[i];
+  }
+  return keys[keys.length - 1];
+}
+
+function calcularPuntaje(num, posFreq, posRecent, total, recent) {
+  let score = 0;
+  for (let i = 0; i < 4; i++) {
+    const d  = num[i];
+    const hm = Math.max(...Object.values(posFreq[i]))   || 1;
+    const rm = Math.max(...Object.values(posRecent[i])) || 1;
+    score += 0.60 * ((posFreq[i][d]||0) / hm)
+           + 0.40 * ((posRecent[i][d]||0) / rm);
+  }
+  return Math.round((score / 4) * 1000) / 10;
+}
+
+function etiquetaPuntaje(p) {
+  if (p >= 75) return { stars: '⭐⭐⭐', label: 'MUY ALTO' };
+  if (p >= 55) return { stars: '⭐⭐',   label: 'ALTO' };
+  if (p >= 35) return { stars: '⭐',     label: 'MEDIO' };
+  return              { stars: '·',      label: 'BAJO' };
+}
+
+// ══════════════════════════════════════════
+//  ANÁLISIS BASE
+// ══════════════════════════════════════════
+
+function analizarBase(numbers) {
+  const total  = numbers.length;
+  const recent = numbers.slice(Math.max(0, total - 10));
+  const posFreq   = Array.from({length:4}, () => Object.fromEntries([...Array(10)].map((_,i)=>[String(i),0])));
+  const posRecent = Array.from({length:4}, () => Object.fromEntries([...Array(10)].map((_,i)=>[String(i),0])));
+  for (const n of numbers)
+    for (let i = 0; i < 4; i++) posFreq[i][n[i]]++;
+  for (const n of recent)
+    for (let i = 0; i < 4; i++) posRecent[i][n[i]]++;
+  return { posFreq, posRecent, total, recent };
+}
+
+// ══════════════════════════════════════════
+//  MÉTODO 🔥 — TEMPERATURA ADAPTATIVA
+// ══════════════════════════════════════════
+
+function generarCaliente(numbers, cantidad, posFreq, posRecent, total, recent, excluir) {
+  const temperatura = 0.3 + Math.random() * 0.5;
+
+  function pesosPos(i) {
+    const w = {};
+    for (let d = 0; d < 10; d++) {
+      const ds   = String(d);
+      const hist = ((posFreq[i][ds]   || 0) + 1) / (total       + 10);
+      const rec  = ((posRecent[i][ds] || 0) + 1) / (recent.length + 10);
+      const base = 0.55 * hist + 0.45 * rec;
+      const ruido = Math.random() * temperatura * base;
+      w[ds] = base + ruido;
+    }
+    return w;
+  }
+
+  const grupo = [], genNums = [];
+  let intentos = 0;
+  while (grupo.length < cantidad && intentos < 50000) {
+    intentos++;
+    const num = [0,1,2,3].map(i => ruleta(pesosPos(i))).join('');
+    if (!excluir.has(num) && !tieneRepetidos(num)
+        && genNums.every(n => diferencia(num, n) >= 2)) {
+      const p = calcularPuntaje(num, posFreq, posRecent, total, recent);
+      grupo.push({ num, p, tipo: 'hot' });
+      genNums.push(num);
+    }
+  }
+  grupo.sort((a, b) => b.p - a.p);
+  return { grupo, temperatura: Math.round(temperatura * 100) / 100 };
+}
+
+// ══════════════════════════════════════════
+//  MÉTODO ❄️ — AUSENCIA EXPONENCIAL
+// ══════════════════════════════════════════
+
+function generarFrio(numbers, cantidad, posFreq, posRecent, total, recent, excluir) {
+  const escala = Math.max(3, Math.floor(numbers.length / 8));
+
+  function pesosPos(i) {
+    const ultimoIdx = Object.fromEntries([...Array(10)].map((_,d)=>[String(d), -1]));
+    numbers.forEach((n, idx) => { ultimoIdx[n[i]] = idx; });
+    const w = {};
+    for (let d = 0; d < 10; d++) {
+      const ds      = String(d);
+      const ausencia = (numbers.length - 1) - ultimoIdx[ds];
+      const pesoExp  = Math.exp(ausencia / escala);
+      const ruido    = 0.8 + Math.random() * 0.4;
+      w[ds] = pesoExp * ruido;
+    }
+    return w;
+  }
+
+  const grupo = [], genNums = [];
+  let intentos = 0;
+  while (grupo.length < cantidad && intentos < 50000) {
+    intentos++;
+    const num = [0,1,2,3].map(i => ruleta(pesosPos(i))).join('');
+    if (!excluir.has(num) && !tieneRepetidos(num)
+        && genNums.every(n => diferencia(num, n) >= 2)) {
+      const p = calcularPuntaje(num, posFreq, posRecent, total, recent);
+      grupo.push({ num, p, tipo: 'cold' });
+      genNums.push(num);
+    }
+  }
+  grupo.sort((a, b) => b.p - a.p);
+  return { grupo, escala };
+}
+
+// ══════════════════════════════════════════
+//  MÉTODO 🌀 — MUESTREO POR ÉPOCAS
+// ══════════════════════════════════════════
+
+function generarMixto(numbers, cantidad, posFreq, posRecent, total, recent, excluir) {
+  const n  = numbers.length;
+  const t1 = Math.floor(n / 3);
+  const t2 = Math.floor(2 * n / 3);
+  const epocas = [
+    t1 > 0   ? numbers.slice(0, t1)    : numbers.slice(0, 1),
+    t2 > t1  ? numbers.slice(t1, t2)   : numbers.slice(0, 1),
+    t2 < n   ? numbers.slice(t2)       : numbers.slice(-1),
+  ];
+  const freqEpocas = epocas.map(ep => {
+    const fe = Array.from({length:4}, () => Object.fromEntries([...Array(10)].map((_,d)=>[String(d),0])));
+    for (const num of ep)
+      for (let i = 0; i < 4; i++) fe[i][num[i]]++;
+    return { fe, ne: ep.length };
+  });
+
+  function pesosEpoca(i, epIdx) {
+    const { fe, ne } = freqEpocas[epIdx];
+    const w = {};
+    for (let d = 0; d < 10; d++) {
+      const ds = String(d);
+      w[ds] = ((fe[i][ds] || 0) + 1) / (ne + 10);
+    }
+    return w;
+  }
+
+  const grupo = [], genNums = [];
+  let intentos = 0;
+  while (grupo.length < cantidad && intentos < 50000) {
+    intentos++;
+    const epSel = [0,1,2,3].map(() => Math.floor(Math.random() * 3));
+    const num   = [0,1,2,3].map(i => ruleta(pesosEpoca(i, epSel[i]))).join('');
+    if (!excluir.has(num) && !tieneRepetidos(num)
+        && genNums.every(n => diferencia(num, n) >= 2)) {
+      const p = calcularPuntaje(num, posFreq, posRecent, total, recent);
+      grupo.push({ num, p, tipo: 'mix' });
+      genNums.push(num);
+    }
+  }
+  grupo.sort((a, b) => b.p - a.p);
+  return { grupo, tamEpoc: epocas.map(e => e.length) };
+}
+
+// ══════════════════════════════════════════
+//  ORQUESTADOR
+// ══════════════════════════════════════════
+
+function generar(numbers, cantidad) {
+  const { posFreq, posRecent, total, recent } = analizarBase(numbers);
+  const excluir = new Set(numbers.slice(-5));
+  const { grupo: cal, temperatura: temp } =
+    generarCaliente(numbers, cantidad, posFreq, posRecent, total, recent, excluir);
+  const { grupo: fri, escala } =
+    generarFrio(numbers, cantidad, posFreq, posRecent, total, recent, excluir);
+  const { grupo: mix, tamEpoc } =
+    generarMixto(numbers, cantidad, posFreq, posRecent, total, recent, excluir);
+  return { cal, fri, mix, posFreq, posRecent, total, recent, temp, escala, tamEpoc };
+}
+
+// ══════════════════════════════════════════
+//  RENDER
+// ══════════════════════════════════════════
+
+function scoreColor(p) {
+  if (p >= 75) return '#f0c040';
+  if (p >= 55) return '#3bba6e';
+  if (p >= 35) return '#58a6ff';
+  return '#484f58';
+}
+
+function renderNumCard(item, idx) {
+  const { num, p, tipo } = item;
+  const { stars, label } = etiquetaPuntaje(p);
+  const col = { hot:'var(--hot)', cold:'var(--cold)', mix:'var(--mix)' }[tipo];
+  return `
+    <div class="num-card ${tipo}">
+      <div class="num-rank">#${idx+1}</div>
+      <div class="num-digits">${num}</div>
+      <div class="num-score">
+        <div class="score-bar-wrap">
+          <div class="score-bar" style="width:${p}%;background:${scoreColor(p)}"></div>
+        </div>
+        <div class="num-pct">${p.toFixed(1)}%</div>
+        <div class="num-stars">${stars} ${label}</div>
+      </div>
+    </div>`;
+}
+
+function renderMethod(tipo, icon, name, desc, grupo) {
+  return `
+    <div class="method-section fade-up">
+      <div class="method-header ${tipo}">
+        <span class="method-icon">${icon}</span>
+        <span class="method-name ${tipo}">${name}</span>
+        <span class="method-desc">${desc}</span>
+      </div>
+      <div class="nums-grid">
+        ${grupo.map((item, i) => renderNumCard(item, i)).join('')}
+      </div>
+    </div>`;
+}
+
+function renderFreqGrid(posFreq) {
+  const digits = [...Array(10)].map((_,i) => String(i));
+  let html = '<div class="freq-grid">';
+  for (let i = 0; i < 4; i++) {
+    const maxV = Math.max(...digits.map(d => posFreq[i][d])) || 1;
+    const sorted = [...digits].sort((a,b) => posFreq[i][b] - posFreq[i][a]);
+    html += `<div class="freq-pos"><div class="freq-pos-title">POSICIÓN ${i+1}</div>`;
+    for (const d of sorted) {
+      const v   = posFreq[i][d];
+      const pct = Math.round(v / maxV * 100);
+      const col = v === Math.max(...digits.map(x=>posFreq[i][x])) ? 'var(--hot)' : '#1e4a8a';
+      html += `
+        <div class="freq-item">
+          <span class="freq-digit">${d}</span>
+          <div class="freq-bar-wrap"><div class="freq-bar" style="width:${pct}%;background:${col}"></div></div>
+          <span class="freq-count">${v}</span>
+        </div>`;
+    }
+    html += '</div>';
+  }
+  html += '</div>';
+  return html;
+}
+
+function renderOutput(data) {
+  const { cal, fri, mix, posFreq, total, recent, temp, escala, tamEpoc } = data;
+  const totalComb = cal.length + fri.length + mix.length;
+  return `
+    <div class="stat-bar fade-up">
+      <div class="stat-item">
+        <div class="stat-val">${total}</div>
+        <div class="stat-lbl">RESULTADOS ANALIZADOS</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val">${totalComb}</div>
+        <div class="stat-lbl">COMBINACIONES GENERADAS</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val">${temp}</div>
+        <div class="stat-lbl">TEMPERATURA 🔥</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val">${escala}</div>
+        <div class="stat-lbl">ESCALA EXPONENCIAL ❄️</div>
+      </div>
+    </div>
+
+    <div class="card fade-up" style="animation-delay:.07s">
+      <div class="card-title">📊 FRECUENCIA POR POSICIÓN</div>
+      ${renderFreqGrid(posFreq)}
+    </div>
+
+    ${renderMethod('hot',  '🔥', 'TEMPERATURA ADAPTATIVA',
+      `Frec. histórica + ruido aleatorio (temp=${temp})`, cal)}
+
+    ${renderMethod('cold', '❄️', 'AUSENCIA EXPONENCIAL',
+      `Peso e^(ausencia/${escala}) — los más atrasados tienen prioridad`, fri)}
+
+    ${renderMethod('mix',  '🌀', 'MUESTREO POR ÉPOCAS',
+      `3 épocas (${tamEpoc[0]}/${tamEpoc[1]}/${tamEpoc[2]} sorteos)`, mix)}
+
+    <div class="disclaimer fade-up">
+      🔍 Filtros aplicados: sin triples consecutivos · diversidad ≥ 2 posiciones · sin repetir últimos 5<br>
+      ⚠️ Combinaciones ponderadas por historial + aleatoriedad controlada. La lotería es aleatoria y no garantiza aciertos.<br>
+      Juega solo lo que puedas permitirte perder. 🍀
+    </div>`;
+}
+
+// ══════════════════════════════════════════
+//  ACCIONES UI
+// ══════════════════════════════════════════
+
+function setStatus(msg, cls = '') {
+  const el = document.getElementById('status');
+  el.className = cls;
+  el.innerHTML = msg;
+}
+
+function runGenerar() {
+  const raw     = document.getElementById('inputNums').value.trim();
+  const qty     = parseInt(document.querySelector('input[name="qty"]:checked').value);
+  const btnGen  = document.getElementById('btnGenerar');
+  const output  = document.getElementById('output');
+
+  if (!raw) {
+    setStatus('⚠ Por favor ingresa los resultados del Dorado.', 'err');
+    return;
+  }
+  const numbers = parseNumbers(raw);
+  if (numbers.length < 5) {
+    setStatus(`⚠ Solo ${numbers.length} número(s). Se necesitan al menos 5.`, 'err');
+    return;
+  }
+
+  btnGen.disabled = true;
+  output.style.display = 'none';
+  setStatus('<span class="spinner"></span>Generando combinaciones…', 'wait');
+
+  // Defer para que el browser pinte el estado de carga
+  setTimeout(() => {
+    try {
+      const data = generar(numbers, qty);
+      output.innerHTML = renderOutput(data);
+      output.style.display = 'block';
+      setStatus(`✅ ${data.cal.length + data.fri.length + data.mix.length} combinaciones generadas — ${data.total} resultados analizados.`, 'ok');
+    } catch(e) {
+      setStatus('❌ Error al generar: ' + e.message, 'err');
+    }
+    btnGen.disabled = false;
+  }, 30);
+}
+
+function limpiar() {
+  document.getElementById('inputNums').value = '';
+  document.getElementById('output').style.display = 'none';
+  document.getElementById('output').innerHTML = '';
+  setStatus('Listo.');
+}
+</script>
+</body>
+</html>
